@@ -70,14 +70,14 @@ file.prototype.reset = function (item) {
  * Deletes the stored file and resets the field value
  */
 file.prototype.remove = function (item, callback) {
-    var field = this;
-	this.storage.removeFile(item.get(this.path), function(err){
-	    if(err){
-	        callback(err);
-	    } else{
-	        field.reset(item); //must take in the item to reset
-	        callback();
-	    }
+	var field = this;
+	this.storage.removeFile(item.get(this.path), function (err) {
+		if (err) {
+			callback(err);
+		} else {
+			field.reset(item); // must take in the item to reset
+			callback();
+		}
 	});
 };
 
@@ -165,7 +165,7 @@ file.prototype.updateItem = function (item, data, files, callback) {
 	// "delete" is used to bring it in line with what validateInput expects.
 	if (value === 'delete') {
 		this.remove(item, callback);
-		//hard return here to prevent callback from being invoked twice. 
+		// hard return here to prevent callback from being invoked twice.
 		return;
 	}
 
