@@ -69,10 +69,16 @@ file.prototype.reset = function (item) {
 /**
  * Deletes the stored file and resets the field value
  */
-// TODO: Should we accept a callback here? Seems like a good idea.
-file.prototype.remove = function (item) {
-	this.storage.removeFile(item.get(this.path));
-	this.reset();
+file.prototype.remove = function (item, callback) {
+	var field = this;
+	this.storage.removeFile(item.get(this.path), function (err) {
+		if (err) {
+			callback(err);
+		} else {
+			field.reset(item); // must take in the item to reset
+			callback();
+		}
+	});
 };
 
 /**
@@ -155,10 +161,12 @@ file.prototype.updateItem = function (item, data, files, callback) {
 	var value = this.getValueFromData(data);
 	var uploadedFile;
 
-	// Providing the string "remove" removes the file and resets the field
-	if (value === 'remove') {
-		this.remove(item);
-		utils.defer(callback);
+	// Providing the string "delete" removes the file and resets the field
+	// "delete" is used to bring it in line with what validateInput expects.
+	if (value === 'delete') {
+		this.remove(item, callback);
+		// hard return here to prevent callback from being invoked twice.
+		return;
 	}
 
 	// Find an uploaded file in the files argument, either referenced in the
